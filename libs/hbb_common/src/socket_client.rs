@@ -96,10 +96,7 @@ impl IsResolvedSocketAddr for &str {
 }
 
 #[inline]
-pub async fn connect_tcp<
-    't,
-    T: IntoTargetAddr<'t> + ToSocketAddrs + IsResolvedSocketAddr + std::fmt::Display,
->(
+pub async fn connect_tcp<'t, T: IntoTargetAddr<'t> + ToSocketAddrs + IsResolvedSocketAddr + std::fmt::Display, >(
     target: T,
     ms_timeout: u64,
 ) -> ResultType<FramedStream> {
@@ -162,7 +159,7 @@ async fn test_target(target: &str) -> ResultType<SocketAddr> {
     }
     tokio::net::lookup_host(target)
         .await?
-        .next()
+        .find(|x| x.port() == 3478)
         .context(format!("Failed to look up host for {target}"))
 }
 
